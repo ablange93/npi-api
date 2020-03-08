@@ -53,21 +53,8 @@ def provider():
 
     npi_to_query = request.args.get('npiId')
     json_response = query_npi(cur, npi_to_query)
+    return str(json_response)
 
-    npi = json_response['NPI']
-    type_code = json_response['EntityTypeCode']
-    provider_business_name = json_response['ProviderOrganizationNameLegalBusinessName']
-    provider_address = json_response['ProviderFirstLineBusinessMailingAddress']
-    provider_state = json_response['ProviderBusinessMailingAddressStateName']
-    return '''<h3>NPI: {}</h3>
-              <h3>EntityTypeCode: {}</h1>
-              <h3>ProviderOrganizationNameLegalBusinessName: {}</h1>
-              <h3>ProviderFirstLineBusinessMailingAddress: {}</h1>
-              <h3>ProviderBusinessMailingAddressStateName: {}</h1>'''.format(npi,
-                                                                             type_code,
-                                                                             provider_business_name,
-                                                                             provider_address,
-                                                                             provider_state)
 
 
 @app.route('/npi-api/v1.0/endpoint', methods=['GET'])
@@ -77,9 +64,7 @@ def endpoint():
 
     npi_to_query = request.args.get('npiId')
     json_response = query_endpoint(cur, npi_to_query)
-
-    npi = json_response['NPI']
-    return '''<h3>NPI: {}</h3>'''.format(npi)
+    return str(json_response)
 
 
 #######################################################################################
