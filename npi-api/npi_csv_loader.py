@@ -336,7 +336,7 @@ def load_npi(file_path, conn):
                   i['Healthcare Provider Taxonomy Group_14'],
                   i['Healthcare Provider Taxonomy Group_15']) for i in dr]
 
-    cur.executemany("""
+        cur.executemany("""
     INSERT OR IGNORE INTO tblNpi (
         NPI,
         EntityTypeCode,
