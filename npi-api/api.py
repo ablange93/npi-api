@@ -40,22 +40,16 @@ def query_npi_id(c, npi_id):
 @app.route('/api/v1.0/provider', methods=['GET'])
 def query_example():
     conn = sqlite3.connect(NPI_DB_FILE)
-    c = conn.cursor()
+    cur = conn.cursor()
 
     npi_to_query = request.args.get('npiId')
+    json_response = query_npi_id(cur, npi_to_query)
 
-    c.execute('SELECT * FROM {table} WHERE {column}={npi_id}'.
-              format(table=NPI_TABLE_NAME, column=NPI_COLUMN_NAME, npi_id=npi_to_query))
-    query_result = [dict((c.description[i][0], value)
-              for i, value in enumerate(row)) for row in c.fetchall()]
-    json_output = json.loads(str(query_result[0]).replace("\'", "\""))
-
-    npi = json_output['NPI']
-    type_code = json_output['EntityTypeCode']
-    provider_business_name = json_output['ProviderOrganizationNameLegalBusinessName']
-    provider_address = json_output['ProviderFirstLineBusinessMailingAddress']
-    provider_state = json_output['ProviderBusinessMailingAddressStateName']
-    conn.close()
+    npi = json_response['NPI']
+    type_code = json_response['EntityTypeCode']
+    provider_business_name = json_response['ProviderOrganizationNameLegalBusinessName']
+    provider_address = json_response['ProviderFirstLineBusinessMailingAddress']
+    provider_state = json_response['ProviderBusinessMailingAddressStateName']
     return '''<h3>NPI: {}</h3>
               <h3>EntityTypeCode: {}</h1>
               <h3>ProviderOrganizationNameLegalBusinessName: {}</h1>
