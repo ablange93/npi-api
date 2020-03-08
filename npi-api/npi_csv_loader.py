@@ -709,7 +709,7 @@ def load_endpoints(file_path, conn):
                 i['Affiliation Address Postal Code']) for i in dr]
 
         cur.executemany("""
-            INSERT INTO tblEndpoint (
+            INSERT OR IGNORE INTO tblEndpoint (
                 NPI,
                 EndpointType,
                 EndpointTypeDescription,
@@ -729,7 +729,7 @@ def load_endpoints(file_path, conn):
                 AffiliationAddressState,
                 AffiliationAddressCountry,
                 AffiliationAddressPostalCode 
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?,	?, ?, ?, ?,	?, ?, ?, ?, ?,)""", to_db)
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?,	?, ?, ?, ?,	?, ?, ?, ?, ?)""", to_db)
 
 
 def load_alternate_locations(file_path, conn):
@@ -745,11 +745,10 @@ def load_alternate_locations(file_path, conn):
                 i['Provider Secondary Practice Location Address - Country Code (If outside U.S.)'],
                 i['Provider Secondary Practice Location Address - Telephone Number'],
                 i['Provider Secondary Practice Location Address - Telephone Extension'],
-                i['Provider Practice Location Address - Fax Number'],
-                ) for i in dr]
+                i['Provider Practice Location Address - Fax Number']) for i in dr]
 
         cur.executemany("""
-            INSERT INTO tblProviderAltLocation (
+            INSERT OR IGNORE INTO tblProviderAltLocation (
                 NPI,
                 ProviderSecondaryPracticeLocationAddressAddressLine1,
                 ProviderSecondaryPracticeLocationAddressAddressLine2,
@@ -763,23 +762,45 @@ def load_alternate_locations(file_path, conn):
             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);""", to_db)
 
 
-# def load_other(file_path, conn):
-#     cur = conn.cursor()
-#     with open(file_path, 'r') as fin:
-#         dr = csv.DictReader(fin)  # comma is default delimiter
-#         to_db = [(i['NPI'],
-#
-#                   cur.executemany("""
-#            INSERT OR IGNORE INTO tblNpi (
-#                NPI,
-#                HealthcareProviderTaxonomyGroup_15
-#                ) VALUES (?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,
-#                ?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,
-#                ?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,
-#                ?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,
-#                ?,	?,	?,	?,	?,	?);""", to_db)
+def load_other(file_path, conn):
+    cur = conn.cursor()
+    with open(file_path, 'r') as fin:
+        dr = csv.DictReader(fin)  # comma is default delimiter
+        to_db = [(i['NPI'],
+                i['Provider Other Organization Name'],
+                i['Provider Other Organization Name Type Code']) for i in dr]
+
+        cur.executemany("""
+            INSERT OR IGNORE INTO tblOtherName (
+                NPI, 
+                ProviderOtherOrganizationName, 
+                ProviderOtherOrganizationNameTypeCode
+            ) VALUES (?, ?, ?);""", to_db)
 
 
-con = sqlite3.connect("data/npi.db")
-con.commit()
-con.close()
+def load_all(target_path):
+    # establish connection
+    conn = sqlite3.connect(target_path)
+    print("\nestablished connection to SQLite3 database.\n")
+
+    # load tables
+    load_npi('data/npidata_pfile_20190902-20190908.csv', conn)
+    load_endpoints('data/endpoint_pfile_20190902-20190908.csv', conn)
+    load_alternate_locations('data/pl_pfile_20190902-20190908.csv', conn)
+    load_other('data/othername_pfile_20190902-20190908.csv', conn)
+
+    # clean up
+    conn.commit()  # commit changes
+    conn.close()   # close connection
+    print("all done!")
+
+
+#######################################################################################
+# CONSTANTS #
+#######################################################################################
+TARGET = 'data/npi.db'
+
+#######################################################################################
+# MAIN #
+#######################################################################################
+load_all(TARGET)
