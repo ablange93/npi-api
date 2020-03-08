@@ -54,7 +54,7 @@ def home():
 
 
 @app.route('/npi-api/v1.0/provider', methods=['GET'])
-def provider():
+def get_provider():
     conn = sqlite3.connect(NPI_DB_FILE)
     cur = conn.cursor()
 
@@ -70,7 +70,7 @@ def provider():
 
 
 @app.route('/npi-api/v1.0/endpoint', methods=['GET'])
-def endpoint():
+def get_endpoint():
     conn = sqlite3.connect(NPI_DB_FILE)
     cur = conn.cursor()
 
@@ -89,10 +89,3 @@ def endpoint():
 # MAIN #
 #######################################################################################
 app.run()  # http://127.0.0.1:5000/api/v1.0/provider?npiId=1376000000
-# conn = sqlite3.connect(NPI_DB_FILE)
-# cur = conn.cursor()
-# # 1376064311 # good
-# # 1376000000 # bad
-# resp = query_endpoint(cur, 1376000000)
-# print(resp)
-# conn.close()
