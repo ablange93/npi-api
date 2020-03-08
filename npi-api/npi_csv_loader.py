@@ -684,21 +684,52 @@ def load_npi(file_path, conn):
         ?,	?,	?,	?,	?,	?,	?,	?,	?,	?);""", to_db)
 
 
-# def load_endpoints(file_path, conn):
-#     cur = conn.cursor()
-#     with open(file_path, 'r') as fin:
-#         dr = csv.DictReader(fin)  # comma is default delimiter
-#         to_db = [(i['NPI'],
-#
-#                   cur.executemany("""
-#            INSERT OR IGNORE INTO tblNpi (
-#                NPI,
-#                HealthcareProviderTaxonomyGroup_15
-#                ) VALUES (?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,
-#                ?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,
-#                ?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,
-#                ?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,
-#                ?,	?,	?,	?,	?,	?);""", to_db)
+def load_endpoints(file_path, conn):
+    cur = conn.cursor()
+    with open(file_path, 'r') as fin:
+        dr = csv.DictReader(fin)  # comma is default delimiter
+        to_db = [(i['NPI'],
+                i['Endpoint Type'],
+                i['Endpoint Type Description'],
+                i['Endpoint'],
+                i['Affiliation'],
+                i['Endpoint Description'],
+                i['Affiliation Legal Business Name'],
+                i['Use Code'],
+                i['Use Description'],
+                i['Other Use Description'],
+                i['Content Type'],
+                i['Content Description'],
+                i['Other Content Description'],
+                i['Affiliation Address Line One'],
+                i['Affiliation Address Line Two'],
+                i['Affiliation Address City'],
+                i['Affiliation Address State'],
+                i['Affiliation Address Country'],
+                i['Affiliation Address Postal Code']) for i in dr]
+
+        cur.executemany("""
+            INSERT INTO tblEndpoint (
+                NPI,
+                EndpointType,
+                EndpointTypeDescription,
+                Endpoint,
+                Affiliation,
+                EndpointDescription,
+                AffiliationLegalBusinessName,
+                UseCode,
+                UseDescription,
+                OtherUseDescription,
+                ContentType,
+                ContentDescription,
+                OtherContentDescription,
+                AffiliationAddressLineOne,
+                AffiliationAddressLineTwo,
+                AffiliationAddressCity,
+                AffiliationAddressState,
+                AffiliationAddressCountry,
+                AffiliationAddressPostalCode 
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?,	?, ?, ?, ?,	?, ?, ?, ?, ?,)""", to_db)
 
 # def load_alternate_locations(file_path, conn):
 #     cur = conn.cursor()
