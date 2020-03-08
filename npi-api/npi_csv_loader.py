@@ -731,21 +731,36 @@ def load_endpoints(file_path, conn):
                 AffiliationAddressPostalCode 
             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?,	?, ?, ?, ?,	?, ?, ?, ?, ?,)""", to_db)
 
-# def load_alternate_locations(file_path, conn):
-#     cur = conn.cursor()
-#     with open(file_path, 'r') as fin:
-#         dr = csv.DictReader(fin)  # comma is default delimiter
-#         to_db = [(i['NPI'],
-#
-#                   cur.executemany("""
-#            INSERT OR IGNORE INTO tblNpi (
-#                NPI,
-#                HealthcareProviderTaxonomyGroup_15
-#                ) VALUES (?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,
-#                ?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,
-#                ?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,
-#                ?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,
-#                ?,	?,	?,	?,	?,	?);""", to_db)
+
+def load_alternate_locations(file_path, conn):
+    cur = conn.cursor()
+    with open(file_path, 'r') as fin:
+        dr = csv.DictReader(fin)  # comma is default delimiter
+        to_db = [(i['NPI'],
+                i['Provider Secondary Practice Location Address- Address Line 1'],
+                i['Provider Secondary Practice Location Address-  Address Line 2'],
+                i['Provider Secondary Practice Location Address - City Name'],
+                i['Provider Secondary Practice Location Address - State Name'],
+                i['Provider Secondary Practice Location Address - Postal Code'],
+                i['Provider Secondary Practice Location Address - Country Code (If outside U.S.)'],
+                i['Provider Secondary Practice Location Address - Telephone Number'],
+                i['Provider Secondary Practice Location Address - Telephone Extension'],
+                i['Provider Practice Location Address - Fax Number'],
+                ) for i in dr]
+
+        cur.executemany("""
+            INSERT INTO tblProviderAltLocation (
+                NPI,
+                ProviderSecondaryPracticeLocationAddressAddressLine1,
+                ProviderSecondaryPracticeLocationAddressAddressLine2,
+                ProviderSecondaryPracticeLocationAddressCityName,
+                ProviderSecondaryPracticeLocationAddressStateName,
+                ProviderSecondaryPracticeLocationAddressPostalCode,
+                ProviderSecondaryPracticeLocationAddressCountryCode,
+                ProviderSecondaryPracticeLocationAddressTelephoneNumber,
+                ProviderSecondaryPracticeLocationAddressTelephoneExtension,
+                ProviderPracticeLocationAddressFaxNumber 
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);""", to_db)
 
 
 # def load_other(file_path, conn):
