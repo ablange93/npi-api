@@ -13,6 +13,6 @@ See 'provider_response.json' in resources/ to see what the API response looks li
 
 # Endpoints
 To query endpoint information, pass in a npiId value using the below API call:<br/>
-"http://host:port/npi-api/v1.0/endpoint?npiId=<npi-id>"
+http://host:port/npi-api/v1.0/endpoint?npiId=npi-id-goes-here
 <br/>
 See 'endpoint_response.json' in resources/ to see what the API response looks like.
