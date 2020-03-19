@@ -87,9 +87,6 @@ def get_endpoint():
 
 
 @app.route('/npi-api/v1.0/discover_provider', methods=['GET'])
-# @app.route('/npi-api/v1.0/discover_provider/<state>')
-# @app.route('/npi-api/v1.0/discover_provider/<zip_code>')
-# @app.route('/npi-api/v1.0/discover_provider/<type>/<state>/<zip>')
 def discover_provider(npi_type=None, state=None, zip_code=None):
     # return "<h1>NPI Data Web Interface</h1><p>This site is a prototype API that enables users to access NPI data.</p>"
     conn = sqlite3.connect(NPI_DB_FILE)
@@ -107,18 +104,13 @@ def discover_provider(npi_type=None, state=None, zip_code=None):
     for param in param_map.keys():
         if param is not None:
             query_string += str(param_map[param]) + " = '" + str(param) + "' AND "
-    query_string = query_string[:-5] + ";"
-    # return '<h3>' + hello + '</h3>'
+    query_string = query_string[:-5] + " limit 10;"
 
     # query database
     c.execute(query_string)
     query_result = [dict((c.description[i][0], value)
               for i, value in enumerate(row)) for row in c.fetchall()]
-    if len(query_result) == 0:
-        out = False
-    else:
-        out = json.loads(str(query_result[0]).replace("\'", "\""))
-    return str(out)
+    return str(query_result)
 
 
 #######################################################################################
