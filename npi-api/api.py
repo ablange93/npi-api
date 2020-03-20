@@ -119,7 +119,7 @@ def discover_provider(npi_type=None, state=None, zip_code=None):
         abort(404)
     else:
         # format json response string
-        json_response = json.loads(str(query_result[0]).replace("\'", "\""))
+        json_response = json.loads(str(query_result).replace("\'", "\""))
         json_response_string = str(json_response).replace("'", '"')  # stringify object
     return str(json_response_string)
 
@@ -128,9 +128,10 @@ def discover_provider(npi_type=None, state=None, zip_code=None):
 # MAIN #
 #######################################################################################
 app.run()
-# PROVIDER (GOOD) -> http://127.0.0.1:5000/npi-api/v1.0/provider?npiId=1992963425
+# PROVIDER (GOOD) -> http://127.0.0.1:5000/npi-api/v1.0/provider?npiId=1003022070
 # ENDPOINT (GOOD) -> http://127.0.0.1:5000/npi-api/v1.0/endpoint?npiId=1376064311
-# DISCOVER_PROVIDER (GOOD) -> http://127.0.0.1:5000/npi-api/v1.0/endpoint?npiId=1376064311
+# DISCOVER_PROVIDER (GOOD) ->
+#   http://127.0.0.1:5000/npi-api/v1.0/discover_provider?npi_type=1?state=NC?ProviderBusinessMailingAddressPostalCode=282199305
 # PROVIDER (BAD) -> http://127.0.0.1:5000/npi-api/v1.0/provider?npiId=199295555
 # PROVIDER (BAD -> http://127.0.0.1:5000/npi-api/v1.0/provider?npiId=199295555
 # DISCOVER_PROVIDER (BAD) -> http://127.0.0.1:5000/npi-api/v1.0/endpoint?npiId=199295555
