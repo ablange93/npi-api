@@ -1,5 +1,7 @@
 *.idea/
 .idea/
+resources/lange-npi-api-presentation.pptx
+*.pptx
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
