@@ -62,12 +62,13 @@ def get_provider():
     # query database
     npi_to_query = request.args.get('npiId')
     json_response = query_npi(cur, npi_to_query)
+    json_response_string = str(json_response).replace("'", '"')  # stringify object
     conn.close()
 
     # return HTTP 404 code when NPI doesn't exist
     if not json_response:
         abort(404)
-    return str(json_response)  # stringify object
+    return json_response_string
 
 
 @app.route('/npi-api/v1.0/endpoint', methods=['GET'])
@@ -78,17 +79,18 @@ def get_endpoint():
     # query database
     npi_to_query = request.args.get('npiId')
     json_response = query_endpoint(cur, npi_to_query)
+    json_response_string = str(json_response).replace("'", '"')  # stringify object
     conn.close()
 
     # return HTTP 404 code when NPI doesn't exist
     if not json_response:
         abort(404)
-    return str(json_response)  # stringify object
+    return str(json_response_string)  # stringify object
 
 
 @app.route('/npi-api/v1.0/discover_provider', methods=['GET'])
 def discover_provider(npi_type=None, state=None, zip_code=None):
-    # return "<h1>NPI Data Web Interface</h1><p>This site is a prototype API that enables users to access NPI data.</p>"
+    # establish DB connection
     conn = sqlite3.connect(NPI_DB_FILE)
     c = conn.cursor()
 
@@ -110,39 +112,25 @@ def discover_provider(npi_type=None, state=None, zip_code=None):
     c.execute(query_string)
     query_result = [dict((c.description[i][0], value)
               for i, value in enumerate(row)) for row in c.fetchall()]
-    return str(query_result)
+
+    # format result(s)
+    if len(query_result) == 0:
+        # return HTTP 404 if no record(s) were found
+        abort(404)
+    else:
+        # format json response string
+        json_response = json.loads(str(query_result[0]).replace("\'", "\""))
+        json_response_string = str(json_response).replace("'", '"')  # stringify object
+    return str(json_response_string)
 
 
 #######################################################################################
 # MAIN #
 #######################################################################################
-app.run()  # http://127.0.0.1:5000/npi-api/v1.0/provider?npiId=1992963425
-# http://127.0.0.1:5000/npi-api/v1.0/discover_provider?npi_type=2?state=OR?zip_code=977031970
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+app.run()
+# PROVIDER (GOOD) -> http://127.0.0.1:5000/npi-api/v1.0/provider?npiId=1992963425
+# ENDPOINT (GOOD) -> http://127.0.0.1:5000/npi-api/v1.0/endpoint?npiId=1376064311
+# DISCOVER_PROVIDER (GOOD) -> http://127.0.0.1:5000/npi-api/v1.0/endpoint?npiId=1376064311
+# PROVIDER (BAD) -> http://127.0.0.1:5000/npi-api/v1.0/provider?npiId=199295555
+# PROVIDER (BAD -> http://127.0.0.1:5000/npi-api/v1.0/provider?npiId=199295555
+# DISCOVER_PROVIDER (BAD) -> http://127.0.0.1:5000/npi-api/v1.0/endpoint?npiId=199295555
